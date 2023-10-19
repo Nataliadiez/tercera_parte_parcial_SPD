@@ -27,6 +27,7 @@ Agrega una fotorresistencia como componente adicional, que afecte el funcionamie
 int contador = 0;
 int decena;
 int unidad;
+// Almacena el tiempo en milisegundos del último evento
 unsigned long tiempoAnterior = 0;
 int intervaloDeTiempo = 200;
 int divisores;
@@ -64,9 +65,11 @@ void setup()
  * Comienzo del contador numerico.
  */
 void loop(){
+  // Obtiene el tiempo actual en milisegundos
   unsigned long tiempoActual = millis();
   if (tiempoActual - tiempoAnterior >= intervaloDeTiempo)
   {
+    // Actualiza el valor de previousMillis al tiempo actual
     tiempoAnterior = tiempoActual;
     
     if (digitalRead(INTERRUPTOR_NUMEROS_LUZ) == LOW)
@@ -220,7 +223,7 @@ void medicionTemperaturaLuzLed(int temp){
    if (temp <= 15){
       encenderLedRGB(0, 255, 0);
     }else if(temp < 50){
-      encenderLedRGB(255, 0, 255);
+      encenderLedRGB(255, 3, 180);
     }else if(temp <= 125){
       encenderLedRGB(255, 0, 0);
     }
