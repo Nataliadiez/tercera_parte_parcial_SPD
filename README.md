@@ -15,7 +15,8 @@ Este proyecto incluye componentes como un LED RGB, un sensor de temperatura (TMP
 El interruptor deslizante permite alternar entre dos modos: mostrar números naturales o indicar la hora actual.
 La fotorresistencia es un componente electrónico que varía su resistencia eléctrica en función de la intensidad de la luz incidente.
 En este proyecto, la misma evalúa la luminosidad ambiente y afecta la visualización de la hora en los displays. A mayor luminosidad, la hora tiende a aproximarse a las 7:00, cuando sale completamente el sol.
-La luz LED RGB se ajusta según las lecturas del sensor de temperatura y muestra colores diferentes: azul para el frío, amarillo para el calor moderado y rojo para el calor intenso. Se apaga al amanecer, simulando el comportamiento de las luces de la carretera que funcionan por la noche y se apagan al salir el sol (cuando la fotorresistencia llega a su punto más alto de detección de luminosidad). Esto permite a los conductores evaluar las condiciones de la carretera según la información térmica proporcionada por los LEDs.
+La luz LED RGB se ajusta según las lecturas del sensor de temperatura y muestra colores diferentes: azul para el frío, amarillo para el calor moderado y rojo para el calor intenso. Además, la intensidad del LED RGB varía en función de la detección del sensor de fotorresistencia, disminuyendo su intensidad lumínica, a medida que aumenta la luminosidad ambiente.
+Se apaga al amanecer, simulando el comportamiento de las luces de la carretera que funcionan por la noche y se apagan al salir el sol (cuando la fotorresistencia llega a su punto más alto de detección de luminosidad). Esto permite a los conductores evaluar las condiciones de la carretera según la información térmica proporcionada por los LEDs.
 
 
 

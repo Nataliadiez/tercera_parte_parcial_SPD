@@ -16,8 +16,9 @@ Agrega una fotorresistencia como componente adicional, que afecte el funcionamie
 #define DISPLAY_UNIDAD A4
 #define DISPLAY_DECENA A5
 #define LED_AZUL A3
-#define LED_VERDE 9
+#define LED_VERDE 8
 #define LED_ROJO A0
+#define LED_RGB 9
 
 #define TMP A2
 #define FOTORRESISTENCIA A1
@@ -103,15 +104,16 @@ void loop(){
   }else{
     int lecturaFoto = analogRead(FOTORRESISTENCIA);
     int lectura_TMP = analogRead(TMP);
+    int lecturaLED = analogRead(LED_RGB);
     int temperatura = map(lectura_TMP, 20, 358, -40, 125);
+    int luminosidad = map(lecturaLED,10,800,255,0);
     contador = calcularHoraDelDia(lecturaFoto);
-      if (contador == 7)
-      {
-        //se apaga el led RGB al salir el sol
-        encenderLedRGB(LOW,LOW,LOW);
-      }else{
-        medicionTemperaturaLuzLed(temperatura);
-      }
+    //Establece la intensidad según el sensor de fotorresistencia
+    
+      
+    //establece color del LED RGB según la temperatura
+    medicionTemperaturaLuzLed(temperatura);
+      analogWrite(LED_RGB, luminosidad);
     }
   }
     mostrarNumeroEnDisplay(contador);
