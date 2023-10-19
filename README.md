@@ -13,8 +13,10 @@
 # Descripción
 Este proyecto incluye componentes como un LED RGB, un sensor de temperatura (TMP 36), una fotorresistencia y un interruptor deslizante.
 El interruptor deslizante permite alternar entre dos modos: mostrar números naturales o indicar la hora actual.
-La fotorresistencia evalúa la luminosidad ambiente y afecta la visualización de la hora en los displays. A mayor luminosidad, la hora tiende a aproximarse a las 7:00, cuando sale completamente el sol.
-La luz LED RGB se ajusta según las lecturas del sensor de temperatura y muestra colores diferentes: azul para el frío, amarillo para el calor moderado y rojo para el calor intenso. Se apaga al amanecer, simulando el comportamiento de las luces de la carretera que funcionan por la noche y se apagan al salir el sol. Esto permite a los conductores evaluar las condiciones de la carretera según la información térmica proporcionada por los LEDs.
+La fotorresistencia es un componente electrónico que varía su resistencia eléctrica en función de la intensidad de la luz incidente.
+En este proyecto, la misma evalúa la luminosidad ambiente y afecta la visualización de la hora en los displays. A mayor luminosidad, la hora tiende a aproximarse a las 7:00, cuando sale completamente el sol.
+La luz LED RGB se ajusta según las lecturas del sensor de temperatura y muestra colores diferentes: azul para el frío, amarillo para el calor moderado y rojo para el calor intenso. Se apaga al amanecer, simulando el comportamiento de las luces de la carretera que funcionan por la noche y se apagan al salir el sol (cuando la fotorresistencia llega a su punto más alto de detección de luminosidad). Esto permite a los conductores evaluar las condiciones de la carretera según la información térmica proporcionada por los LEDs.
+
 
 
 # Funciones
@@ -147,6 +149,55 @@ void medicionTemperaturaLuzLed(int temp){
 }
 ~~~
 
+## encenderLedRGB
+Función que configura un LED RGB para mostrar un color específico según los valores proporcionados.
+
+Parámetros
+* "rojo" entero que representa la intensidad del componente de color rojo.
+* "azul" entero que representa la intensidad del componente de color azul.
+* "verde" entero que representa la intensidad del componente de color verde.
+*/
+
+Según el valor que reciba cada parámetro, el led va a mostrarse de determinado color (rojo, amarillo, azul).
+
+~~~ C
+void encenderLedRGB(int rojo, int azul, int verde){
+  analogWrite(LED_ROJO, rojo);
+  analogWrite(LED_AZUL, azul);
+  analogWrite(LED_VERDE, verde);
+}
+~~~
+
+## calcularHoraDelDia
+Función que toma lectura de una fotorresistencia y devuelve la hora del día.
+
+Parámetros
+* "lecturaFotorresistencia" entero que representa la lectura de una fotorresistencia.
+
+Según un rango númerico basado en la lectura de la fotorresistencia, va a establecer diferentes horas que van a mostrarse en los displays.
+~~~ C
+int calcularHoraDelDia(int lecturaFotorresistencia){
+  int hora = 0;
+  if (lecturaFotorresistencia == 800){
+     hora = 0;
+    }else if (lecturaFotorresistencia >= 39){
+      hora = 1;
+    }else if (lecturaFotorresistencia >= 27){
+      hora = 2;
+    }else if (lecturaFotorresistencia >= 19){
+      hora = 3;
+    }else if (lecturaFotorresistencia >= 18){
+      hora = 4;
+    }else if (lecturaFotorresistencia >= 15){
+      hora = 5;
+    }else if (lecturaFotorresistencia >= 11){
+      hora = 6;
+    }else if (lecturaFotorresistencia == 10){
+      hora = 7;
+    }
+  return hora;
+}
+~~~
 ## :robot: Link al proyecto
 - [proyecto](https://www.tinkercad.com/things/84LH4CgUB3I)
 
