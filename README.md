@@ -199,7 +199,7 @@ int calcularHoraDelDia(int lecturaFotorresistencia){
 }
 ~~~
 ## :robot: Link al proyecto
-- [proyecto](https://www.tinkercad.com/things/84LH4CgUB3I)
+- [proyecto](https://www.tinkercad.com/things/4x0RfmnV6lv?sharecode=tdGhKVd1lTGxEoLLCxQJn-vvswwdHeKc9yh4ACk3Tgo)
 
 ---
 ### Fuentes
