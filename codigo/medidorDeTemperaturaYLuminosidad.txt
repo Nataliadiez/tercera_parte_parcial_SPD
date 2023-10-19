@@ -1,0 +1,263 @@
+/*
+-----------CONSIGNA TERCERA PARTE DEL PARCIAL----------------------------------
+Agrega una fotorresistencia como componente adicional, que afecte el funcionamiento del proyecto.
+---------------------------------------------------------------------
+*/
+
+#define B_PIN 13
+#define A_PIN 12
+#define F_PIN 11
+#define G_PIN 10
+#define E_PIN 7
+#define D_PIN 6
+#define C_PIN 5
+#define BOTON_INCREMENTAR 4
+#define BOTON_REDUCIR 3
+#define DISPLAY_UNIDAD A4
+#define DISPLAY_DECENA A5
+#define LED_AZUL A3
+#define LED_VERDE 9
+#define LED_ROJO A0
+
+#define TMP A2
+#define FOTORRESISTENCIA A1
+#define INTERRUPTOR_NUMEROS_LUZ 2
+
+int contador = 0;
+int decena;
+int unidad;
+unsigned long tiempoAnterior = 0;
+int intervaloDeTiempo = 200;
+int divisores;
+bool mostrarNumeros = true;
+
+void encenderSegmento(int sf, int sa, int sb, int sg, int se, int sd, int sc);
+
+/**
+ * Función que setea los pines de los display y los botones
+ */
+void setup()
+{
+  pinMode(A_PIN,OUTPUT);
+  pinMode(B_PIN,OUTPUT);
+  pinMode(C_PIN,OUTPUT);
+  pinMode(D_PIN,OUTPUT);
+  pinMode(E_PIN,OUTPUT);
+  pinMode(F_PIN,OUTPUT);
+  pinMode(G_PIN,OUTPUT);
+  pinMode(BOTON_INCREMENTAR, INPUT_PULLUP);
+  pinMode(BOTON_REDUCIR, INPUT_PULLUP);
+  pinMode(DISPLAY_UNIDAD, OUTPUT);
+  pinMode(DISPLAY_DECENA, OUTPUT);
+  pinMode(FOTORRESISTENCIA, INPUT_PULLUP);
+  pinMode(INTERRUPTOR_NUMEROS_LUZ, INPUT);
+  pinMode(LED_ROJO, OUTPUT);
+  pinMode(LED_AZUL, OUTPUT);
+  pinMode(LED_VERDE, OUTPUT);
+  
+  Serial.begin(9600);
+
+}
+
+/**
+ * Comienzo del contador numerico.
+ */
+void loop(){
+  unsigned long tiempoActual = millis();
+  if (tiempoActual - tiempoAnterior >= intervaloDeTiempo)
+  {
+    tiempoAnterior = tiempoActual;
+    
+    if (digitalRead(INTERRUPTOR_NUMEROS_LUZ) == LOW)
+    {
+      // El interruptor está en posición "números"
+      mostrarNumeros = true;
+    }else{
+      // El interruptor está en posición "hora"
+      mostrarNumeros = false;
+    }
+    
+    //Se muestran los números naturales en los display
+    if (mostrarNumeros)
+    {
+      if (digitalRead(BOTON_INCREMENTAR) == LOW)
+      {
+         if (contador < 99)
+          {
+            contador++;
+          }else{
+            contador = 0;
+          }
+        }
+      if(digitalRead(BOTON_REDUCIR) == LOW)
+      {
+        if (contador > 0)
+        {
+          contador--;
+        }else{
+          contador = 99;
+        }
+      }
+      
+     //Se muestra la hora del día en los display
+  }else{
+    int lecturaFoto = analogRead(FOTORRESISTENCIA);
+    int lectura_TMP = analogRead(TMP);
+    int temperatura = map(lectura_TMP, 20, 358, -40, 125);
+    contador = calcularHoraDelDia(lecturaFoto);
+      if (contador == 7)
+      {
+        //se apaga el led RGB al salir el sol
+        encenderLedRGB(LOW,LOW,LOW);
+      }else{
+        medicionTemperaturaLuzLed(temperatura);
+      }
+    }
+  }
+    mostrarNumeroEnDisplay(contador);
+}
+
+/**
+ * Funcion que enciende los segmentos según el valor que reciben los parámetros (0, 1).
+ * @param sa: posicion segmento A_PIN.
+ * @param sb: posicion segmento B_PIN.
+ * @param sc: posicion segmento C_PIN.
+ * @param sd: posicion segmento D_PIN.
+ * @param se: posicion segmento E_PIN.
+ * @param sf: posicion segmento F_PIN.
+ * @param sg: posicion segmento G_PIN.
+ */
+void encenderSegmento(int sf, int sa, int sb, int sg, int se, int sd, int sc)
+{
+  digitalWrite(F_PIN, sf);
+  digitalWrite(A_PIN, sa);
+  digitalWrite(B_PIN, sb);
+  digitalWrite(G_PIN, sg);
+  digitalWrite(E_PIN, se);
+  digitalWrite(D_PIN, sd);
+  digitalWrite(C_PIN, sc);
+}
+
+/**
+ * Función que establece el orden de display a utilizar.
+ * @param numero: entero que representa el numero a mostrar.
+ */
+void seleccionarNumero(int numero)
+{
+  switch(numero)
+  {
+    case 0:
+        encenderSegmento(1,1,1,0,1,1,1); 
+        break;
+    case 1: 
+        encenderSegmento(0,0,1,0,0,0,1); 
+        break;
+    case 2: 
+        encenderSegmento(0,1,1,1,1,1,0); 
+        break;
+    case 3: 
+        encenderSegmento(0,1,1,1,0,1,1); 
+        break;
+    case 4: 
+        encenderSegmento(1,0,1,1,0,0,1); 
+        break;
+    case 5: 
+        encenderSegmento(1,1,0,1,0,1,1); 
+        break;
+    case 6: 
+        encenderSegmento(1,1,0,1,1,1,1); 
+        break;
+    case 7: 
+        encenderSegmento(0,1,1,0,0,0,1); 
+        break;
+    case 8:
+        encenderSegmento(1,1,1,1,1,1,1); 
+        break;
+    case 9: 
+        encenderSegmento(1,1,1,1,0,1,1); 
+      break;
+  }
+}
+
+/**
+ * Función que establece el encendido de los display.
+ * @param estadoDecena: estado del display de decenas.
+ * @param estadoUnidades: estado del display de unidades.
+ */
+void encenderDisplay(int estadoDecena, int estadoUnidades)
+{
+  digitalWrite(DISPLAY_DECENA, estadoDecena);
+  digitalWrite(DISPLAY_UNIDAD, estadoUnidades);
+}
+
+
+/*
+* Función que se encarga de mostrar un número en los display de 7 segmentos.
+* @param numero: número entero que se desea mostrar en los display.
+*/
+void mostrarNumeroEnDisplay(int numero){
+  	int decena = numero / 10;
+    int unidad = numero % 10;
+
+    seleccionarNumero(decena);
+    encenderDisplay(0,1);
+    delay(10);
+    encenderDisplay(1,1);
+
+    seleccionarNumero(unidad);
+    encenderDisplay(1,0);
+    delay(10);
+    encenderDisplay(1,1);
+}
+
+/*
+* Función que según la temperatura en C° determina el color del LED RGB.
+* @param temp: entero que representa la temperatura en grados Celsius. 
+*/
+void medicionTemperaturaLuzLed(int temp){
+   if (temp <= 15){
+      encenderLedRGB(0, 255, 0);
+    }else if(temp < 50){
+      encenderLedRGB(255, 0, 255);
+    }else if(temp <= 125){
+      encenderLedRGB(255, 0, 0);
+    }
+}
+
+/*
+* Función que configura un LED RGB para mostrar un color específico según los valores proporcionados.
+* @param rojo: entero que representa la intensidad del componente de color rojo.
+* @param azul: entero que representa la intensidad del componente de color azul.
+* @param verde: entero que representa la intensidad del componente de color verde.
+*/
+void encenderLedRGB(int rojo, int azul, int verde){
+  analogWrite(LED_ROJO, rojo);
+  analogWrite(LED_AZUL, azul);
+  analogWrite(LED_VERDE, verde);
+}
+
+/*
+* Función que toma lectura de una fotorresistencia y devuelve la hora del día.
+* @param lecturaFotorresistencia: entero que representa la lectura de una fotorresistencia.
+*/
+int calcularHoraDelDia(int lecturaFotorresistencia){
+  int hora = 0;
+  if (lecturaFotorresistencia == 800){
+     hora = 0;
+    }else if (lecturaFotorresistencia >= 39){
+      hora = 1;
+    }else if (lecturaFotorresistencia >= 27){
+      hora = 2;
+    }else if (lecturaFotorresistencia >= 19){
+      hora = 3;
+    }else if (lecturaFotorresistencia >= 18){
+      hora = 4;
+    }else if (lecturaFotorresistencia >= 15){
+      hora = 5;
+    }else if (lecturaFotorresistencia >= 11){
+      hora = 6;
+    }else if (lecturaFotorresistencia == 10){
+      hora = 7;
+    }
+  return hora;
+}
